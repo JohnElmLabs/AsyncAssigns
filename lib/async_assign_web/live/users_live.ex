@@ -6,8 +6,6 @@ defmodule AsyncAssignWeb.UsersLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <h1 class="text-2xl font-semibold"><%= @table_header %></h1>
-
     <span>Without the async assign helper:</span>
     <div> Admin user: </div>
     <div :if={@admin_user.loading}>Loading admin ...</div>
@@ -35,11 +33,19 @@ defmodule AsyncAssignWeb.UsersLive do
       <% end %>
     </.async_result>
 
+    <h1 class="mt-4 text-2xl font-semibold"><%= @table_header %></h1>
+
     <div class="container mx-auto mt-10">
       <div class="flex flex-row font-bold">
         <div class="flex-1 p-4 border">ID</div>
         <div class="flex-1 p-4 border">Name</div>
         <div class="flex-1 p-4 border">Email</div>
+      </div>
+
+      <div :for={user <- @all_users} class="flex flex-row font-bold">
+        <div class="flex-1 p-4 border"><%= user.id %></div>
+        <div class="flex-1 p-4 border">Name</div>
+        <div class="flex-1 p-4 border"><%= user.email %></div>
       </div>
     </div>
     """
