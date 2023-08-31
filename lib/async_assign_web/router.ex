@@ -21,7 +21,7 @@ defmodule AsyncAssignWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
-    get "/users", UsersLive, :index
+    live "/users", UsersLive, :index
   end
 
   # Other scopes may use custom stacks.
