@@ -2,6 +2,7 @@ defmodule AsyncAssignWeb.UsersLive do
   use AsyncAssignWeb, :live_view
 
   alias AsyncAssign.Accounts
+  alias Phoenix.LiveView.AsyncResult
 
   @impl true
   def render(assigns) do
@@ -53,6 +54,8 @@ defmodule AsyncAssignWeb.UsersLive do
   def mount(_params, _session, socket) do
     {:ok,
      socket
+     |> assign(:low_level, AsyncResult.loading())
+     |> start_async(:low_level_task, fn -> raise "!" end)
      |> assign(:table_header, "All Users")
      |> assign_async(:admin_user, fn ->
        {:ok, %{admin_user: Accounts.get_user_by_email("john@johnelmlabs.com")}}
@@ -68,5 +71,17 @@ defmodule AsyncAssignWeb.UsersLive do
         }}
      end)
      |> assign_async(:all_users, fn -> {:ok, %{all_users: Accounts.list_users()}} end)}
+  end
+
+  def handle_async(:low_level_task,  {:ok, user}, socket) do
+    IO.inspect user, label: "!!!!"
+    %{low_level: low_level} = socket.assigns
+    {:noreply, assign(socket, :low_level, AsyncResult.ok(low_level, user))}
+  end
+
+  def handle_async(:low_level_task,  {:exit, reason}, socket) do
+    IO.inspect reason, label: "Exit!"
+    %{low_level: low_level} = socket.assigns
+    {:noreply, assign(socket, :low_level, AsyncResult.failed(low_level, reason))}
   end
 end
