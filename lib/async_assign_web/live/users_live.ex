@@ -7,7 +7,7 @@ defmodule AsyncAssignWeb.UsersLive do
   def render(assigns) do
     ~H"""
     <span>Without the async assign helper:</span>
-    <div> Admin user: </div>
+    <div>Admin user:</div>
     <div :if={@admin_user.loading}>Loading admin ...</div>
     <div :if={admin_user = @admin_user.ok? && @admin_user.result}><%= admin_user.email %></div>
 
@@ -31,7 +31,9 @@ defmodule AsyncAssignWeb.UsersLive do
 
     <h1 class="mt-4 text-2xl font-semibold"><%= @table_header %></h1>
 
-    <span>Collections can be iterated over without checking for the existence of the assign with <code>:if</code>!</span>
+    <span>
+      Collections can be iterated over without checking for the existence of the assign with <code>:if</code>!
+    </span>
 
     <div class="container mx-auto mt-10">
       <div class="flex flex-row font-bold">
@@ -50,11 +52,21 @@ defmodule AsyncAssignWeb.UsersLive do
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
-      socket
-      |> assign(:table_header, "All Users")
-      |> assign_async(:admin_user, fn -> {:ok, %{admin_user: Accounts.get_user_by_email("john@johnelmlabs.com")}} end)
-      |> assign_async(:failed_to_load, fn -> {:error, "Could not find user with email: nonexistent@johnelmlabs.com!"} end)
-      |> assign_async([:john, :tim], fn -> {:ok, %{john: Accounts.get_user_by_email("john@johnelmlabs.com"), tim: Accounts.get_user_by_email("tim@johnelmlabs.com")}} end)
-      |> assign_async(:all_users, fn -> {:ok, %{all_users: Accounts.list_users()}} end)}
+     socket
+     |> assign(:table_header, "All Users")
+     |> assign_async(:admin_user, fn ->
+       {:ok, %{admin_user: Accounts.get_user_by_email("john@johnelmlabs.com")}}
+     end)
+     |> assign_async(:failed_to_load, fn ->
+       {:error, "Could not find user with email: nonexistent@johnelmlabs.com!"}
+     end)
+     |> assign_async([:john, :tim], fn ->
+       {:ok,
+        %{
+          john: Accounts.get_user_by_email("john@johnelmlabs.com"),
+          tim: Accounts.get_user_by_email("tim@johnelmlabs.com")
+        }}
+     end)
+     |> assign_async(:all_users, fn -> {:ok, %{all_users: Accounts.list_users()}} end)}
   end
 end
