@@ -28,6 +28,7 @@ defmodule AsyncAssign.Accounts do
   end
 
   def list_users do
+    :timer.sleep(:rand.uniform(2000))
     Repo.all(User)
   end
 
