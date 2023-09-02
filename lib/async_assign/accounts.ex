@@ -23,6 +23,7 @@ defmodule AsyncAssign.Accounts do
 
   """
   def get_user_by_email(email) when is_binary(email) do
+    :timer.sleep(:rand.uniform(2000))
     Repo.get_by(User, email: email)
   end
 

@@ -12,14 +12,10 @@ defmodule AsyncAssignWeb.UsersLive do
     <div :if={admin_user = @admin_user.ok? && @admin_user.result}><%= admin_user.email %></div>
 
     <div class="mt-8">With the async assign helper:</div>
-    <.async_result :let={user} assign={@admin_user}>
-      <:loading>Loading admin user...</:loading>
+    <.async_result :let={user} assign={@tim}>
+      <:loading>Loading Tim...</:loading>
       <:failed :let={reason}><%= reason %></:failed>
-      <%= if user do %>
-        <%= user.email %>
-      <% else %>
-        No admin user yet!
-      <% end %>
+      <span :if={user}><%= user.email %></span>
     </.async_result>
 
     <div class="mt-8">If something goes wrong:</div>
@@ -35,16 +31,16 @@ defmodule AsyncAssignWeb.UsersLive do
 
     <h1 class="mt-4 text-2xl font-semibold"><%= @table_header %></h1>
 
+    <span>Collections can be iterated over without checking for the existence of the assign with <code>:if</code>!</span>
+
     <div class="container mx-auto mt-10">
       <div class="flex flex-row font-bold">
         <div class="flex-1 p-4 border">ID</div>
-        <div class="flex-1 p-4 border">Name</div>
         <div class="flex-1 p-4 border">Email</div>
       </div>
 
-      <div :for={user <- @all_users} class="flex flex-row font-bold">
+      <div :for={user <- @all_users} class="flex flex-row">
         <div class="flex-1 p-4 border"><%= user.id %></div>
-        <div class="flex-1 p-4 border">Name</div>
         <div class="flex-1 p-4 border"><%= user.email %></div>
       </div>
     </div>
