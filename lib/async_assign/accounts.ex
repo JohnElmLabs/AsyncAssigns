@@ -32,6 +32,19 @@ defmodule AsyncAssign.Accounts do
     Repo.all(User)
   end
 
+  def fail_to_get!(user) do
+    :timer.sleep(:rand.uniform(2000))
+    raise "Failed to get user #{user}"
+  end
+
+  def sometimes_fail!() do
+    if :rand.uniform(10) < 5 do
+      raise "Fail!"
+    else
+      %User{email: "i_fail_sometimes@johnelmlabs.com"}
+    end
+  end
+
   @doc """
   Gets a user by email and password.
 

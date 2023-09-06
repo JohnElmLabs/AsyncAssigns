@@ -15,20 +15,25 @@ defmodule AsyncAssignWeb.UsersLive do
     <div class="mt-8">With the async assign helper:</div>
     <.async_result :let={user} assign={@tim}>
       <:loading>Loading Tim...</:loading>
-      <:failed :let={reason}><%= reason %></:failed>
+      <:failed :let={_reason}>Failed to load Tim</:failed>
       <span :if={user}><%= user.email %></span>
     </.async_result>
 
     <div class="mt-8">If something goes wrong:</div>
     <.async_result :let={user} assign={@failed_to_load}>
       <:loading>Loading admin user...</:loading>
-      <:failed :let={{:error, reason}}><%= reason %></:failed>
+      <:failed :let={reason}>Failed to load: <%= inspect(reason) %></:failed>
       <%= if user do %>
         <%= user.email %>
       <% else %>
         No admin user yet!
       <% end %>
     </.async_result>
+
+    <div class="mt-8">This start_async tasks fails sometimes:</div>
+    <div :if={@low_level.loading}>Loading the sometimes user ...</div>
+    <div :if={low_level = @low_level.ok? && @low_level.result}>I succeeded! Email: <%= low_level.email %></div>
+    <div :if={@low_level.failed}>We failed to retrieve the user :(</div>
 
     <h1 class="mt-4 text-2xl font-semibold"><%= @table_header %></h1>
 
@@ -55,13 +60,13 @@ defmodule AsyncAssignWeb.UsersLive do
     {:ok,
      socket
      |> assign(:low_level, AsyncResult.loading())
-     |> start_async(:low_level_task, fn -> raise "!" end)
+     |> start_async(:low_level_task, fn -> Accounts.sometimes_fail!() end)
      |> assign(:table_header, "All Users")
      |> assign_async(:admin_user, fn ->
        {:ok, %{admin_user: Accounts.get_user_by_email("john@johnelmlabs.com")}}
      end)
      |> assign_async(:failed_to_load, fn ->
-       {:error, "Could not find user with email: nonexistent@johnelmlabs.com!"}
+       Accounts.fail_to_get!("nonexistent@johnelmlabs.com")
      end)
      |> assign_async([:john, :tim], fn ->
        {:ok,
@@ -74,13 +79,11 @@ defmodule AsyncAssignWeb.UsersLive do
   end
 
   def handle_async(:low_level_task,  {:ok, user}, socket) do
-    IO.inspect user, label: "!!!!"
     %{low_level: low_level} = socket.assigns
     {:noreply, assign(socket, :low_level, AsyncResult.ok(low_level, user))}
   end
 
   def handle_async(:low_level_task,  {:exit, reason}, socket) do
-    IO.inspect reason, label: "Exit!"
     %{low_level: low_level} = socket.assigns
     {:noreply, assign(socket, :low_level, AsyncResult.failed(low_level, reason))}
   end
