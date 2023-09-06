@@ -84,6 +84,7 @@ defmodule AsyncAssignWeb.UsersLive do
   end
 
   def handle_async(:low_level_task,  {:exit, reason}, socket) do
+    # Here we might log if an operation has gone wrong or other side effects
     %{low_level: low_level} = socket.assigns
     {:noreply, assign(socket, :low_level, AsyncResult.failed(low_level, reason))}
   end
