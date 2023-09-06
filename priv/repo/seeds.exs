@@ -9,3 +9,9 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+attrs = [
+  %{email: "john@johnelmlabs.com", password: "asdfasdfasdf"},
+  %{email: "tim@johnelmlabs.com", password: "asdfasdfasdf"}
+]
+|> Enum.map(fn attrs -> AsyncAssign.Accounts.register_user(attrs) end)

@@ -9,19 +9,26 @@ defmodule AsyncAssignWeb.UsersLive do
     ~H"""
     <span>Without the async assign helper:</span>
     <div>Admin user:</div>
-    <div :if={@admin_user.loading}>Loading admin ...</div>
+    <div :if={@admin_user.loading}>
+      <span class="animate-pulse">Loading admin ...</span>
+    </div>
+
     <div :if={admin_user = @admin_user.ok? && @admin_user.result}><%= admin_user.email %></div>
 
     <div class="mt-8">With the async assign helper:</div>
     <.async_result :let={user} assign={@tim}>
-      <:loading>Loading Tim...</:loading>
+      <:loading>
+        <span class="animate-pulse">
+          Loading Tim...
+        </span>
+      </:loading>
       <:failed :let={_reason}>Failed to load Tim</:failed>
       <span :if={user}><%= user.email %></span>
     </.async_result>
 
-    <div class="mt-8">If something goes wrong:</div>
+    <div class="mt-8">If something goes wrong, show an error message with the error slot:</div>
     <.async_result :let={user} assign={@failed_to_load}>
-      <:loading>Loading admin user...</:loading>
+      <:loading><span class="animate-pulse">Loading admin user...</span></:loading>
       <:failed :let={reason}>Failed to load: <%= inspect(reason) %></:failed>
       <%= if user do %>
         <%= user.email %>
@@ -31,7 +38,12 @@ defmodule AsyncAssignWeb.UsersLive do
     </.async_result>
 
     <div class="mt-8">This start_async tasks fails sometimes:</div>
-    <div :if={@low_level.loading}>Loading the sometimes user ...</div>
+    <div :if={@low_level.loading}>
+      <span class="animate-pulse">
+        Loading the sometimes user ...
+      </span>
+    </div>
+
     <div :if={low_level = @low_level.ok? && @low_level.result}>I succeeded! Email: <%= low_level.email %></div>
     <div :if={@low_level.failed}>We failed to retrieve the user :(</div>
 

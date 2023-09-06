@@ -23,17 +23,17 @@ defmodule AsyncAssign.Accounts do
 
   """
   def get_user_by_email(email) when is_binary(email) do
-    :timer.sleep(:rand.uniform(2000))
+    :timer.sleep(:rand.uniform(3000))
     Repo.get_by(User, email: email)
   end
 
   def list_users do
-    :timer.sleep(:rand.uniform(2000))
+    :timer.sleep(:rand.uniform(3000))
     Repo.all(User)
   end
 
   def fail_to_get!(user) do
-    :timer.sleep(:rand.uniform(2000))
+    :timer.sleep(:rand.uniform(3000))
     raise "Failed to get user #{user}"
   end
 
