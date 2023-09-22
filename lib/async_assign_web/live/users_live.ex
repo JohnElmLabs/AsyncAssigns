@@ -44,7 +44,9 @@ defmodule AsyncAssignWeb.UsersLive do
       </span>
     </div>
 
-    <div :if={low_level = @low_level.ok? && @low_level.result}>I succeeded! Email: <%= low_level.email %></div>
+    <div :if={low_level = @low_level.ok? && @low_level.result}>
+      I succeeded! Email: <%= low_level.email %>
+    </div>
     <div :if={@low_level.failed}>We failed to retrieve the user :(</div>
 
     <h1 class="mt-4 text-2xl font-semibold"><%= @table_header %></h1>
@@ -90,12 +92,12 @@ defmodule AsyncAssignWeb.UsersLive do
      |> assign_async(:all_users, fn -> {:ok, %{all_users: Accounts.list_users()}} end)}
   end
 
-  def handle_async(:low_level_task,  {:ok, user}, socket) do
+  def handle_async(:low_level_task, {:ok, user}, socket) do
     %{low_level: low_level} = socket.assigns
     {:noreply, assign(socket, :low_level, AsyncResult.ok(low_level, user))}
   end
 
-  def handle_async(:low_level_task,  {:exit, reason}, socket) do
+  def handle_async(:low_level_task, {:exit, reason}, socket) do
     # Here we might log if an operation has gone wrong or other side effects
     %{low_level: low_level} = socket.assigns
     {:noreply, assign(socket, :low_level, AsyncResult.failed(low_level, reason))}
