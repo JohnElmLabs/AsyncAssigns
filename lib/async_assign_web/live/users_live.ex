@@ -61,10 +61,12 @@ defmodule AsyncAssignWeb.UsersLive do
         <div class="flex-1 p-4 border">Email</div>
       </div>
 
-      <div :for={user <- @all_users} class="flex flex-row">
-        <div class="flex-1 p-4 border"><%= user.id %></div>
-        <div class="flex-1 p-4 border"><%= user.email %></div>
-      </div>
+      <%= if @all_users.ok? do %>
+        <div :for={user <- @all_users.result} class="flex flex-row">
+          <div class="flex-1 p-4 border"><%= user.id %></div>
+          <div class="flex-1 p-4 border"><%= user.email %></div>
+        </div>
+      <% end %>
     </div>
     """
   end
